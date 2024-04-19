@@ -7,118 +7,114 @@ import (
 	"tour-api/internal/model"
 )
 
-func GetNotes(c *fiber.Ctx) error {
+func GetRoutes(c *fiber.Ctx) error {
 	db := database.DB
-	var notes []model.Note
+	var routes []model.Route
 
 	// find all notes in the database
-	db.Find(&notes)
+	db.Find(&routes)
 
 	// If no noteHandler is present return an error
-	if len(notes) == 0 {
+	if len(routes) == 0 {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No notes present", "data": nil})
 	}
 
 	// Else return notes
-	return c.JSON(fiber.Map{"status": "success", "message": "Notes Found", "data": notes})
+	return c.JSON(fiber.Map{"status": "success", "message": "Notes Found", "data": routes})
 }
 
-func CreateNotes(c *fiber.Ctx) error {
+func CreateRoute(c *fiber.Ctx) error {
 	db := database.DB
-	note := new(model.Note)
+	route := new(model.Route)
 
 	// Store the body in the noteHandler and return error if encountered
-	err := c.BodyParser(note)
+	err := c.BodyParser(route)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err})
 	}
-	// Add a uuid to the noteHandler
-	note.ID = uuid.New()
+	route.ID = uuid.New()
 	// Create the Note and return error if encountered
-	err = db.Create(&note).Error
+	err = db.Create(&route).Error
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Could not create noteHandler", "data": err})
 	}
 
 	// Return the created noteHandler
-	return c.JSON(fiber.Map{"status": "success", "message": "Created Note", "data": note})
+	return c.JSON(fiber.Map{"status": "success", "message": "Created Note", "data": route})
 }
 
-func GetNote(c *fiber.Ctx) error {
+func GetRoute(c *fiber.Ctx) error {
 	db := database.DB
-	var note model.Note
+	var route model.Route
 
 	// Read the param noteId
 	id := c.Params("noteId")
-
-	// Find the noteHandler with the given Id
-	db.Find(&note, "id = ?", id)
+	db.Find(&route, "id = ?", id)
 
 	// If no such noteHandler present return an error
-	if note.ID == uuid.Nil {
+	if route.ID == uuid.Nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No noteHandler present", "data": nil})
 	}
 
-	// Return the noteHandler with the Id
-	return c.JSON(fiber.Map{"status": "success", "message": "Notes Found", "data": note})
+	return c.JSON(fiber.Map{"status": "success", "message": "Notes Found", "data": route})
 }
 
-func UpdateNote(c *fiber.Ctx) error {
-	type updateNote struct {
-		Title    string `json:"title"`
-		SubTitle string `json:"sub_title"`
-		Text     string `json:"Text"`
+func UpdateRoute(c *fiber.Ctx) error {
+	type updateRoute struct {
+		Title    string  `json:"title"`
+		SubTitle string  `json:"sub_title"`
+		Text     string  `json:"Text"`
+		Distance float32 `json:"Distance"`
 	}
 	db := database.DB
-	var note model.Note
+	var route model.Route
 
 	// Read the param noteId
 	id := c.Params("noteId")
 
-	// Find the noteHandler with the given Id
-	db.Find(&note, "id = ?", id)
+	db.Find(&route, "id = ?", id)
 
 	// If no such noteHandler present return an error
-	if note.ID == uuid.Nil {
+	if route.ID == uuid.Nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No noteHandler present", "data": nil})
 	}
 
 	// Store the body containing the updated data and return error if encountered
-	var updateNoteData updateNote
+	var updateNoteData updateRoute
 	err := c.BodyParser(&updateNoteData)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err})
 	}
 
 	// Edit the noteHandler
-	note.Title = updateNoteData.Title
-	note.SubTitle = updateNoteData.SubTitle
-	note.Text = updateNoteData.Text
+	route.Title = updateNoteData.Title
+	route.SubTitle = updateNoteData.SubTitle
+	route.Text = updateNoteData.Text
+	route.Distance = updateNoteData.Distance
 
 	// Save the Changes
-	db.Save(&note)
+	db.Save(&route)
 
 	// Return the updated noteHandler
-	return c.JSON(fiber.Map{"status": "success", "message": "Notes Found", "data": note})
+	return c.JSON(fiber.Map{"status": "success", "message": "Notes Found", "data": route})
 }
 
-func DeleteNote(c *fiber.Ctx) error {
+func DeleteRoute(c *fiber.Ctx) error {
 	db := database.DB
-	var note model.Note
+	var route model.Route
 
 	// Read the param noteId
 	id := c.Params("noteId")
 
-	// Find the noteHandler with the given Id
-	db.Find(&note, "id = ?", id)
+	db.Find(&route, "id = ?", id)
 
 	// If no such noteHandler present return an error
-	if note.ID == uuid.Nil {
+	if route.ID == uuid.Nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "No noteHandler present", "data": nil})
 	}
 
 	// Delete the noteHandler and return error if encountered
-	err := db.Delete(&note, "id = ?", id).Error
+	err := db.Delete(&route, "id = ?", id).Error
 
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Failed to delete noteHandler", "data": nil})

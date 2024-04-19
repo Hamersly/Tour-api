@@ -9,9 +9,9 @@ func SetupApiRoutes(router fiber.Router) {
 
 	api := router.Group("/api")
 
-	api.Post("/", apiHandlers.CreateNotes)
-	api.Get("/", apiHandlers.GetNotes)
-	api.Get("/:noteId", apiHandlers.GetNote)
-	api.Put("/:id", apiHandlers.UpdateNote)
-	api.Delete("/:id", apiHandlers.DeleteNote)
+	api.Post("/", apiHandlers.CreateRoute)
+	api.Get("/", apiHandlers.GetRoutes)
+	api.Get("/:noteId", apiHandlers.GetRoute)
+	api.Put("/:id", apiHandlers.UpdateRoute)
+	api.Delete("/:id", apiHandlers.DeleteRoute)
 }

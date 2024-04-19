@@ -5,10 +5,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type Note struct {
+type Route struct {
 	gorm.Model
 	ID       uuid.UUID `gorm:"type:uuid"`
 	Title    string
 	SubTitle string
 	Text     string
+	Distance float32
 }
